@@ -1,14 +1,25 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import Home from '../views/Home.vue';
+import Notes from '@/views/Notes.vue';
+import AddEditNote from '@/views/AddEditNote.vue';
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: 'Notes',
+    component: Notes,
+  },
+  {
+    path: '/add',
+    name: 'AddNote',
+    component: AddEditNote,
+  },
+  {
+    path: '/edit/:id',
+    name: 'EditNote',
+    component: AddEditNote,
   },
 ];
 
