@@ -7,6 +7,7 @@
       :readonly="readonly"
       :edit="edit"
       @delete="onDelete"
+      @change="onChange"
     />
     <v-alert border="left" type="info" text class="font-weight-bold mt-3" v-if="!limitedList.length">
       На сегодня задач нету
@@ -43,7 +44,11 @@ export default defineComponent({
       ctx.emit('delete', id);
     };
 
-    return { limitedList, onDelete };
+    const onChange = () => {
+      ctx.emit('change');
+    };
+
+    return { limitedList, onDelete, onChange };
   },
 });
 </script>

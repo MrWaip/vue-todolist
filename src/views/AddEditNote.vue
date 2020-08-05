@@ -5,16 +5,31 @@
         <v-card>
           <v-card-title>
             Создать новую заметку
+            <v-spacer />
+
+            <v-icon class="mr-3" :disabled="logIndex <= 0" color="primary" @click="rollback">
+              mdi-history
+            </v-icon>
+
+            <v-icon :disabled="logIndex == logStack.length - 1" color="primary" @click="forward">
+              mdi-update
+            </v-icon>
           </v-card-title>
           <v-card-text>
             <v-form ref="form">
-              <v-text-field v-model="note.title" label="Заголовок" outlined :rules="[rules.required]" />
+              <v-text-field
+                v-model="note.title"
+                label="Заголовок"
+                outlined
+                :rules="[rules.required]"
+                @blur="onBlurNoteTitle"
+              />
             </v-form>
-            <div class="d-flex justify-space-between align-center pt-3" @click="onClickAddTodo">
+            <div class="d-flex justify-space-between align-center pt-3">
               <div class="body-1">
                 Список дел
               </div>
-              <v-btn color="primary">
+              <v-btn color="primary" @click="onClickAddTodo">
                 <div>
                   Новая задача
                 </div>
@@ -27,6 +42,7 @@
               :items="note.todoList"
               edit
               @delete="onDeleteTodo"
+              @change="onChange"
               style="max-height: 400px; overflow-y: auto"
             />
           </v-card-text>
@@ -55,6 +71,7 @@ import { useRouter } from '@/hooks/useRouter';
 import { useNotes } from '@/hooks/useNotes';
 import TodoList from '@/components/TodoList.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import { Note } from '@/types';
 
 type Form = {
   validate: () => boolean;
@@ -76,7 +93,32 @@ export default defineComponent({
       required: (value: string) => !!value || 'Обязательное поле',
     };
 
+    const logIndex = ref(-1);
+    const logStack = ref<Note[]>([]);
     const note = ref(id ? findNote(id) ?? noteFactory() : noteFactory());
+
+    const addLog = (note: Note) => {
+      const copy = JSON.parse(JSON.stringify(note));
+      if (logStack.value[logIndex.value + 1]) {
+        logStack.value.splice(logIndex.value + 1, logStack.value.length - logIndex.value + 1, copy);
+      } else {
+        logStack.value.push(copy);
+      }
+
+      logIndex.value++;
+    };
+
+    addLog(note.value);
+
+    const rollback = () => {
+      logIndex.value--;
+      note.value = JSON.parse(JSON.stringify(logStack.value[logIndex.value]));
+    };
+
+    const forward = () => {
+      logIndex.value++;
+      note.value = JSON.parse(JSON.stringify(logStack.value[logIndex.value]));
+    };
 
     const onClickSave = () => {
       if (!form.value) return;
@@ -92,11 +134,22 @@ export default defineComponent({
         completed: false,
         title: '',
       });
+
+      addLog(note.value);
+    };
+
+    const onBlurNoteTitle = () => {
+      addLog(note.value);
+    };
+
+    const onChange = () => {
+      addLog(note.value);
     };
 
     const onDeleteTodo = (id: number) => {
       const index = note.value.todoList.findIndex(i => i.id == id);
       note.value.todoList.splice(index, 1);
+      addLog(note.value);
     };
 
     const onClickDeleteNote = async () => {
@@ -125,9 +178,13 @@ export default defineComponent({
       onClickDeleteNote,
       dialog,
       onClickCancelEdit,
+      rollback,
+      forward,
+      logStack,
+      onBlurNoteTitle,
+      logIndex,
+      onChange,
     };
   },
 });
 </script>
-
-<style></style>

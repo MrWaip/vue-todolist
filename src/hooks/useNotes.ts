@@ -3,7 +3,90 @@ import { Note } from '@/types';
 
 export const useNotes = () => {
   const jsonNotes = localStorage.getItem('notes');
-  const notes = ref<Note[]>(jsonNotes ? JSON.parse(jsonNotes) : []);
+  const notes = ref<Note[]>(
+    jsonNotes
+      ? JSON.parse(jsonNotes)
+      : [
+          {
+            id: 1,
+            title: 'Действия с заметкой',
+            todoList: [
+              {
+                id: 1,
+                title: 'сохранить изменения',
+                completed: true,
+              },
+              {
+                id: 2,
+                title: 'отменить редактирование (необходимо подтверждение)',
+                completed: true,
+              },
+              {
+                id: 3,
+                title: 'удалить (необходимо подтверждение)',
+                completed: true,
+              },
+              {
+                id: 4,
+                title: 'отменить внесенное изменение',
+                completed: true,
+              },
+              {
+                id: 5,
+                title: 'повторить отмененное изменение',
+                completed: true,
+              },
+            ],
+          },
+          {
+            id: 2,
+            title: 'Действия с пунктами Todo',
+            todoList: [
+              {
+                id: 1,
+                title: 'добавить',
+                completed: true,
+              },
+              {
+                id: 2,
+                title: 'удалить',
+                completed: true,
+              },
+              {
+                id: 3,
+                title: 'отредактировать текст',
+                completed: true,
+              },
+              {
+                id: 4,
+                title: 'отметить как выполненный',
+                completed: true,
+              },
+            ],
+          },
+          {
+            id: 3,
+            title: 'Действия на главной',
+            todoList: [
+              {
+                id: 1,
+                title: 'перейти к созданию новой заметки',
+                completed: true,
+              },
+              {
+                id: 2,
+                title: 'перейти к изменению',
+                completed: true,
+              },
+              {
+                id: 3,
+                title: 'удалить (необходимо подтверждение)',
+                completed: true,
+              },
+            ],
+          },
+        ],
+  );
 
   const saveNotes = () => {
     localStorage.setItem('notes', JSON.stringify(notes.value));

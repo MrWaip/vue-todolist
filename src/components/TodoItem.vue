@@ -1,10 +1,18 @@
 <template>
   <v-list-item class="pt-3">
     <v-list-item-action>
-      <v-checkbox v-model="todo.completed" :readonly="readonly" hide-details />
+      <v-checkbox v-model="todo.completed" :readonly="readonly" hide-details @change="change" />
     </v-list-item-action>
     <v-list-item-content class="mr-3">
-      <v-text-field v-if="edit" label="Задача" hide-details outlined dense v-model="todo.title" />
+      <v-text-field
+        v-if="edit"
+        label="Задача"
+        hide-details
+        outlined
+        dense
+        v-model="todo.title"
+        @change="change"
+      />
       <v-list-item-title v-else>
         {{ todo.title }}
       </v-list-item-title>
@@ -37,7 +45,11 @@ export default defineComponent({
       ctx.emit('delete', props.todo.id);
     };
 
-    return { onClickDelete };
+    const change = () => {
+      ctx.emit('change');
+    };
+
+    return { onClickDelete, change };
   },
 });
 </script>
